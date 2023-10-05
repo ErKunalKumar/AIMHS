@@ -22,7 +22,7 @@ const JobSeekerSchema = new mongoose.Schema({
     required: [true, "Your qualification is required"],
     trim: true,
   },
-  resume: {
+  file: {
     type: String,
     required: [true, "Your resume is required"],
   },

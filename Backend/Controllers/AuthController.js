@@ -61,7 +61,7 @@ module.exports.Login = async (req, res, next) => {
 
 module.exports.Register = async (req, res, next) => {
   try {
-    const { name, email, mobile, qualification, resume, profile, createdAt } =
+    const { name, email, mobile, qualification, file, profile, createdAt } =
       req.body;
     const existUser = await JobSeekerModel.findOne({ email });
     if (existUser) {
@@ -72,7 +72,7 @@ module.exports.Register = async (req, res, next) => {
       email,
       mobile,
       qualification,
-      resume,
+      file,
       profile,
       createdAt,
     });
@@ -84,6 +84,7 @@ module.exports.Register = async (req, res, next) => {
     res
       .status(201)
       .json({ message: "You have successfully applied ", success: true, user });
+    console.log(user);
     next();
   } catch (error) {
     console.log(error);
