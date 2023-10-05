@@ -4,19 +4,23 @@ const JobSeekerSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, "Your name is required"],
+    trim: true,
   },
   email: {
     type: String,
     required: [true, "Your  email address is required"],
     unique: true,
+    trim: true,
   },
   mobile: {
     type: String,
     required: [true, "Your password is required"],
+    trim: true,
   },
   qualification: {
     type: String,
     required: [true, "Your qualification is required"],
+    trim: true,
   },
   resume: {
     type: String,
@@ -25,6 +29,7 @@ const JobSeekerSchema = new mongoose.Schema({
   profile: {
     type: String,
     required: [true, "Your profile is required"],
+    trim: true,
   },
   createdAt: {
     type: Date,
