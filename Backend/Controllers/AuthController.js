@@ -2,6 +2,7 @@ const User = require("../models/UserModel");
 const JobSeekerModel = require("../models/JobSeekerModel");
 const { createSecretToken } = require("../util/SecretToken");
 const bcrypt = require("bcryptjs");
+const jobPostModel = require("../models/JobPost");
 
 // For signup to login the portal
 
@@ -61,7 +62,7 @@ module.exports.Login = async (req, res, next) => {
 
 module.exports.Register = async (req, res, next) => {
   try {
-    const { name, email, mobile, qualification, file, profile, createdAt } =
+    const { name, email, mobile, qualification, resume, profile, createdAt } =
       req.body;
     const existUser = await JobSeekerModel.findOne({ email });
     if (existUser) {
@@ -72,7 +73,7 @@ module.exports.Register = async (req, res, next) => {
       email,
       mobile,
       qualification,
-      file,
+      resume,
       profile,
       createdAt,
     });
@@ -85,6 +86,55 @@ module.exports.Register = async (req, res, next) => {
       .status(201)
       .json({ message: "You have successfully applied ", success: true, user });
     console.log(user);
+    next();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// For job post
+
+module.exports.JobPost = async (req, res, next) => {
+  try {
+    const {
+      position,
+      company_name,
+      salary,
+      location,
+      experience,
+      preference,
+      job_type,
+      qualification,
+      description,
+      createdAt,
+    } = req.body;
+    // const existUser = await JobSeekerModel.findOne({ email });
+    // if (existUser) {
+    //   return res.json({ message: "You have already applied for the post" });
+    // }
+    const jobPost = await jobPostModel.create({
+      position,
+      company_name,
+      salary,
+      location,
+      experience,
+      preference,
+      job_type,
+      qualification,
+      description,
+      createdAt,
+    });
+    const token = createSecretToken(jobPost._id);
+    res.cookie("token", token, {
+      withCredentials: true,
+      httpOnly: false,
+    });
+    res.status(201).json({
+      message: "You have successfully posted the job ",
+      success: true,
+      jobPost,
+    });
+    console.log(jobPost);
     next();
   } catch (error) {
     console.log(error);
