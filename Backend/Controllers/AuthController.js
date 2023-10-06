@@ -60,37 +60,37 @@ module.exports.Login = async (req, res, next) => {
 
 // For JobSeeker apply the job
 
-module.exports.Register = async (req, res, next) => {
-  try {
-    const { name, email, mobile, qualification, resume, profile, createdAt } =
-      req.body;
-    const existUser = await JobSeekerModel.findOne({ email });
-    if (existUser) {
-      return res.json({ message: "You have already applied for the post" });
-    }
-    const user = await JobSeekerModel.create({
-      name,
-      email,
-      mobile,
-      qualification,
-      resume,
-      profile,
-      createdAt,
-    });
-    const token = createSecretToken(user._id);
-    res.cookie("token", token, {
-      withCredentials: true,
-      httpOnly: false,
-    });
-    res
-      .status(201)
-      .json({ message: "You have successfully applied ", success: true, user });
-    console.log(user);
-    next();
-  } catch (error) {
-    console.log(error);
-  }
-};
+// module.exports.Register = async (req, res, next) => {
+//   try {
+//     const { name, email, mobile, qualification, resume, profile, createdAt } =
+//       req.body;
+//     const existUser = await JobSeekerModel.findOne({ email });
+//     if (existUser) {
+//       return res.json({ message: "You have already applied for the post" });
+//     }
+//     const user = await JobSeekerModel.create({
+//       name,
+//       email,
+//       mobile,
+//       qualification,
+//       resume,
+//       profile,
+//       createdAt,
+//     });
+//     const token = createSecretToken(user._id);
+//     res.cookie("token", token, {
+//       withCredentials: true,
+//       httpOnly: false,
+//     });
+//     res
+//       .status(201)
+//       .json({ message: "You have successfully applied ", success: true, user });
+//     console.log(user);
+//     next();
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 
 // For job post
 
