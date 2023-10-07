@@ -140,3 +140,11 @@ module.exports.JobPost = async (req, res, next) => {
     console.log(error);
   }
 };
+
+// Getting data from mongoose
+module.exports.GetJobPost = async (req, res) => {
+  jobPostModel
+    .find({})
+    .then((jobs) => res.json(jobs))
+    .catch((err) => res.json(err));
+};

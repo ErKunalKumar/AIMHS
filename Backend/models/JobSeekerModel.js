@@ -25,6 +25,7 @@ const JobSeekerSchema = new mongoose.Schema({
   resume: {
     type: String,
     required: [true, "Your resume is required"],
+    data: Buffer,
   },
   profile: {
     type: String,

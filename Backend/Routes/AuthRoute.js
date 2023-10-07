@@ -3,6 +3,7 @@ const {
   Login,
   Register,
   JobPost,
+  GetJobPost,
 } = require("../Controllers/AuthController");
 const { userVerification } = require("../Middlewares/AuthMiddleware");
 const router = require("express").Router();
@@ -17,20 +18,21 @@ const storage = multer.diskStorage({
     cb(null, "uploads");
   },
   filename: function (req, file, cb) {
-    cb(null, uuidv4() + "-" + Date.now() + path.extname(file.originalname));
+    // cb(null, uuidv4() + "-" + Date.now() + path.extname(file.originalname));
+    cb(null, `${Date.now()}_${file.originalname}`);
   },
 });
 
-const fileFilter = (req, file, cb) => {
-  const allowedFileTypes = ["image/jpeg", "image/jpg", "image/png"];
-  if (allowedFileTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(null, false);
-  }
-};
+// const fileFilter = (req, file, cb) => {
+//   const allowedFileTypes = ["image/jpeg", "image/jpg", "image/png"];
+//   if (allowedFileTypes.includes(file.mimetype)) {
+//     cb(null, true);
+//   } else {
+//     cb(null, false);
+//   }
+// };
 
-let upload = multer({ storage, fileFilter });
+let upload = multer({ storage });
 
 // multer end
 
@@ -64,5 +66,6 @@ router.post("/login", Login);
 // router.post("/register", upload.single("resume"), Register);
 router.post("/", userVerification);
 router.post("/jobpost", JobPost);
+router.get("/jobpostdata", GetJobPost);
 
 module.exports = router;
