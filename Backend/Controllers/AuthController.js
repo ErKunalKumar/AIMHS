@@ -3,6 +3,7 @@ const JobSeekerModel = require("../models/JobSeekerModel");
 const { createSecretToken } = require("../util/SecretToken");
 const bcrypt = require("bcryptjs");
 const jobPostModel = require("../models/JobPost");
+const employerModel = require("../models/Employer");
 
 // For signup to login the portal
 
@@ -21,14 +22,14 @@ module.exports.Signup = async (req, res, next) => {
     });
     res
       .status(201)
-      .json({ message: "User signed in successfully", success: true, user });
+      .json({ message: "User signup in successfully", success: true, user });
     next();
   } catch (error) {
     console.error(error);
   }
 };
 
-// For Login
+// For  JobSeeker Login
 
 module.exports.Login = async (req, res, next) => {
   try {
@@ -147,4 +148,68 @@ module.exports.GetJobPost = async (req, res) => {
     .find({})
     .then((jobs) => res.json(jobs))
     .catch((err) => res.json(err));
+};
+
+// For employer registration
+
+module.exports.Employer = async (req, res, next) => {
+  try {
+    const { company_name, mobile, email, password, createdAt } = req.body;
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.json({ message: "Employer already exists" });
+    }
+    const employer = await employerModel.create({
+      company_name,
+      mobile,
+      email,
+      password,
+      createdAt,
+    });
+    const token = createSecretToken(employer._id);
+    res.cookie("token", token, {
+      withCredentials: true,
+      httpOnly: false,
+    });
+    res.status(201).json({
+      message: "You have successfully signup",
+      success: true,
+      employer,
+    });
+    next();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+// For Employer Login
+
+module.exports.EmployerLogin = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.json({ message: "All fields are required" });
+    }
+    const employer = await employerModel.findOne({ email });
+    if (!employer) {
+      return res.json({ message: "Incorrect password or email" });
+    }
+    const auth = await bcrypt.compare(password, employer.password);
+    if (!auth) {
+      return res.json({ message: "Incorrect password or email" });
+    }
+    const token = createSecretToken(employer._id);
+    res.cookie("token", token, {
+      withCredentials: true,
+      httpOnly: false,
+    });
+    res.status(200).json({
+      message: "Employer logged in successfully",
+      success: true,
+      employer,
+    });
+    next();
+  } catch (error) {
+    console.error(error);
+  }
 };
