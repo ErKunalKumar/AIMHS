@@ -4,6 +4,7 @@ const { createSecretToken } = require("../util/SecretToken");
 const bcrypt = require("bcryptjs");
 const jobPostModel = require("../models/JobPost");
 const employerModel = require("../models/Employer");
+const salesModel = require("../models/SalesEnq");
 
 // For signup to login the portal
 
@@ -58,40 +59,6 @@ module.exports.Login = async (req, res, next) => {
     console.error(error);
   }
 };
-
-// For JobSeeker apply the job
-
-// module.exports.Register = async (req, res, next) => {
-//   try {
-//     const { name, email, mobile, qualification, resume, profile, createdAt } =
-//       req.body;
-//     const existUser = await JobSeekerModel.findOne({ email });
-//     if (existUser) {
-//       return res.json({ message: "You have already applied for the post" });
-//     }
-//     const user = await JobSeekerModel.create({
-//       name,
-//       email,
-//       mobile,
-//       qualification,
-//       resume,
-//       profile,
-//       createdAt,
-//     });
-//     const token = createSecretToken(user._id);
-//     res.cookie("token", token, {
-//       withCredentials: true,
-//       httpOnly: false,
-//     });
-//     res
-//       .status(201)
-//       .json({ message: "You have successfully applied ", success: true, user });
-//     console.log(user);
-//     next();
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
 
 // For job post
 
@@ -207,6 +174,50 @@ module.exports.EmployerLogin = async (req, res, next) => {
       message: "Employer logged in successfully",
       success: true,
       employer,
+    });
+    next();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+// For Sales Enquiry Form
+
+module.exports.SalesEnquiry = async (req, res, next) => {
+  try {
+    const {
+      first_name,
+      last_name,
+      email,
+      mobile,
+      company_name,
+      company_size,
+      message,
+      createdAt,
+    } = req.body;
+    // const existingUser = await salesModel.findOne({ email });
+    // if (existingUser) {
+    //   return res.json({ message: "Employer already exists" });
+    // }
+    const sales = await salesModel.create({
+      first_name,
+      last_name,
+      email,
+      mobile,
+      company_name,
+      company_size,
+      message,
+      createdAt,
+    });
+    const token = createSecretToken(sales._id);
+    res.cookie("token", token, {
+      withCredentials: true,
+      httpOnly: false,
+    });
+    res.status(201).json({
+      message: "Your sales enquiry successfully submitted ",
+      success: true,
+      sales,
     });
     next();
   } catch (error) {

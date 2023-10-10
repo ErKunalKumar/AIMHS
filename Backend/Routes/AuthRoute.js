@@ -6,6 +6,7 @@ const {
   GetJobPost,
   Employer,
   EmployerLogin,
+  SalesEnquiry,
 } = require("../Controllers/AuthController");
 const { userVerification } = require("../Middlewares/AuthMiddleware");
 const router = require("express").Router();
@@ -71,5 +72,6 @@ router.post("/jobpost", JobPost);
 router.get("/jobpostdata", GetJobPost);
 router.post("/employer", Employer);
 router.post("/employerlogin", EmployerLogin);
+router.post("/salesenquiry", SalesEnquiry);
 
 module.exports = router;
