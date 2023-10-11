@@ -20,6 +20,12 @@ const employerSchema = new mongoose.Schema({
     unique: false,
     trim: true,
   },
+  username: {
+    type: String,
+    required: [true, "Username is required"],
+    unique: false,
+    trim: true,
+  },
   password: {
     type: String,
     required: [true, "Your password is required"],

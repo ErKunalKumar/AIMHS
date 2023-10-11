@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const jobPostModel = require("../models/JobPost");
 const employerModel = require("../models/Employer");
 const salesModel = require("../models/SalesEnq");
+const AdminModel = require("../models/Admin");
 
 // For signup to login the portal
 
@@ -121,7 +122,8 @@ module.exports.GetJobPost = async (req, res) => {
 
 module.exports.Employer = async (req, res, next) => {
   try {
-    const { company_name, mobile, email, password, createdAt } = req.body;
+    const { company_name, mobile, email, username, password, createdAt } =
+      req.body;
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.json({ message: "Employer already exists" });
@@ -130,6 +132,7 @@ module.exports.Employer = async (req, res, next) => {
       company_name,
       mobile,
       email,
+      username,
       password,
       createdAt,
     });
@@ -219,6 +222,66 @@ module.exports.SalesEnquiry = async (req, res, next) => {
       success: true,
       sales,
     });
+    next();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+// For  Admin Panel
+module.exports.AdminPanel = async (req, res, next) => {
+  try {
+    const { name, mobile, email, password, createdAt } = req.body;
+    const existingUser = await AdminModel.findOne({ email });
+    if (existingUser) {
+      return res.json({ message: "Admin already exists" });
+    }
+    const admin = await AdminModel.create({
+      name,
+      email,
+      mobile,
+      password,
+      createdAt,
+    });
+    const token = createSecretToken(admin._id);
+    res.cookie("token", token, {
+      withCredentials: true,
+      httpOnly: false,
+    });
+    res.status(201).json({
+      message: "You have successfully signup",
+      success: true,
+      admin,
+    });
+    next();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+// For Admin Login
+module.exports.AdminLogin = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.json({ message: "All fields are required" });
+    }
+    const admin = await AdminModel.findOne({ email });
+    if (!admin) {
+      return res.json({ message: "Incorrect password or email" });
+    }
+    const auth = await bcrypt.compare(password, admin.password);
+    if (!auth) {
+      return res.json({ message: "Incorrect password or email" });
+    }
+    const token = createSecretToken(admin._id);
+    res.cookie("token", token, {
+      withCredentials: true,
+      httpOnly: false,
+    });
+    res
+      .status(200)
+      .json({ message: "User logged in successfully", success: true, admin });
     next();
   } catch (error) {
     console.error(error);
