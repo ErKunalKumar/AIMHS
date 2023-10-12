@@ -110,7 +110,7 @@ module.exports.JobPost = async (req, res, next) => {
   }
 };
 
-// Getting data from mongoose
+// Getting  data from mongoose(job posted by Admin)
 module.exports.GetJobPost = async (req, res) => {
   jobPostModel
     .find({})
@@ -286,4 +286,11 @@ module.exports.AdminLogin = async (req, res, next) => {
   } catch (error) {
     console.error(error);
   }
+};
+
+// Getting  data from mongoose(job applied by jobseeker)
+module.exports.GetJobApplied = async (req, res) => {
+  JobSeekerModel.find({})
+    .then((jobs) => res.json(jobs))
+    .catch((err) => res.json(err));
 };
