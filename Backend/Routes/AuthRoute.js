@@ -10,6 +10,8 @@ const {
   AdminPanel,
   AdminLogin,
   GetJobApplied,
+  emailSend,
+  changePassword,
 } = require("../Controllers/AuthController");
 const { userVerification } = require("../Middlewares/AuthMiddleware");
 const router = require("express").Router();
@@ -79,5 +81,6 @@ router.post("/salesenquiry", SalesEnquiry);
 router.post("/adminpanel", AdminPanel);
 router.post("/adminlogin", AdminLogin);
 router.get("/jobseekersdata", GetJobApplied);
-
+router.post("/email-send", emailSend);
+router.post("/change-password", changePassword);
 module.exports = router;

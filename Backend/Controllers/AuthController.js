@@ -6,6 +6,7 @@ const jobPostModel = require("../models/JobPost");
 const employerModel = require("../models/Employer");
 const salesModel = require("../models/SalesEnq");
 const AdminModel = require("../models/Admin");
+const Otp = require("../models/otp");
 
 // For signup to login the portal
 
@@ -293,4 +294,48 @@ module.exports.GetJobApplied = async (req, res) => {
   JobSeekerModel.find({})
     .then((jobs) => res.json(jobs))
     .catch((err) => res.json(err));
+};
+
+// Change Password/Reset Password
+module.exports.emailSend = async (req, res) => {
+  let data = await User.findOne({ email: req.body.email });
+  const responseType = {};
+  if (data) {
+    let otpCode = Math.floor(Math.random() * 10000 + 1);
+    let otpData = new Otp({
+      email: req.body.email,
+      code: otpCode,
+      expireIn: new Date().getTime() + 300 * 1000,
+    });
+    let otpResponse = await otpData.save();
+    responseType.statusText = "Success";
+    responseType.message = "Please Check Your Email Id";
+  } else {
+    responseType.statusText = "Error";
+    responseType.message = "Email Id not exist";
+  }
+  res.status(200).json(responseType);
+};
+
+module.exports.changePassword = async (req, res) => {
+  let data = await Otp.find({ email: req.body.email, code: req.body.otpCode });
+  const response = {};
+  if (data) {
+    let currentTime = new Date().getTime();
+    let diff = data.expireIn - currentTime;
+    if (diff < 0) {
+      response.message = "Token Expire";
+      response.statusText = "Error";
+    } else {
+      let user = await User.findOne({ email: req.body.email });
+      user.password = req.body.password;
+      user.save();
+      response.message = "Password changed Successfully";
+      response.statusText = "Success";
+    }
+  } else {
+    response.message = "Invalid Otp";
+    response.statusText = "Error";
+  }
+  res.status(200).json(response);
 };
